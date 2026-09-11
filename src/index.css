@@ -1,17 +1,87 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand-50: #eef6ff;
-  --color-brand-100: #d9ebff;
-  --color-brand-200: #b9d8ff;
-  --color-brand-500: #2f6fed;
-  --color-brand-600: #2558c4;
-  --color-brand-700: #1d449b;
-  --color-brand-900: #142d68;
+  /* Gold accent scale — #F7C97F is the brand gold, sitting at 300. Darker
+     shades (600/700) exist so gold can be used as readable link/text color,
+     not just a background block. */
+  --color-brand-50: #fdf8ef;
+  --color-brand-100: #fbecd4;
+  --color-brand-200: #f7dcae;
+  --color-brand-300: #f7c97f;
+  --color-brand-400: #eeb85a;
+  --color-brand-500: #e0a23e;
+  --color-brand-600: #c48a2c;
+  --color-brand-700: #9c6d20;
+  --color-brand-800: #6f4d17;
+  --color-brand-900: #4a330f;
+
+  /* Ink scale — #000208 is the deep navy/black institutional background. */
+  --color-ink-950: #000208;
+  --color-ink-900: #05070f;
+  --color-ink-800: #0d1220;
+  --color-ink-700: #171d33;
+  --color-ink-600: #232b48;
+  --color-ink-100: #e7e8ec;
+
+  /* Flat light-neutral used to alternate section backgrounds. */
+  --color-neutral-100: #ededed;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-[#071019] text-white antialiased;
+  min-width: 320px;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #071019;
+}
+
+.home-page > section {
+  position: relative;
+}
+
+.home-page h1,
+.home-page h2,
+.home-page h3 {
+  letter-spacing: -0.02em;
+}
+
+.luxury-section {
+  border-top: 1px solid rgb(247 201 127 / 0.1);
+  background: #071019;
+  padding: 5rem 1.25rem;
+}
+
+.luxury-section-light {
+  background: #0d1822;
+}
+
+.luxury-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1240px;
+}
+
+.luxury-kicker {
+  color: #f7c87f;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.luxury-title {
+  color: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+
+@media (min-width: 640px) {
+  .luxury-section {
+    padding-inline: 2rem;
+  }
 }
 
 /* Hides the scrollbar on horizontal product/category rails while staying scrollable. */

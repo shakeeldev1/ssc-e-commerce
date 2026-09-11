@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
-import { SectionHeading } from '@/components/ui/SectionHeading';
 import { useCategories } from '@/features/catalog/catalog.api';
 
 const TILE_GRADIENTS = [
-  'from-brand-500 to-brand-700',
-  'from-amber-400 to-amber-600',
-  'from-emerald-500 to-emerald-700',
-  'from-rose-400 to-rose-600',
-  'from-violet-500 to-violet-700',
-  'from-cyan-500 to-cyan-700',
+  'from-[#162433] to-[#071019] text-white',
+  'from-[#55401f] to-[#17130e] text-white',
+  'from-[#20313a] to-[#071019] text-white',
+  'from-[#3e2c24] to-[#111417] text-white',
+  'from-[#243b42] to-[#071019] text-white',
+  'from-[#4a3b25] to-[#111417] text-white',
 ];
 
 const TagIcon = () => (
@@ -31,14 +30,18 @@ export const CategoryTiles = () => {
   }
 
   return (
-    <section>
-      <SectionHeading title="Shop by category" />
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+    <section className="luxury-section luxury-section-light">
+      <div className="luxury-container">
+        <p className="luxury-kicker">Curated collections</p>
+        <h2 className="luxury-title mt-3">Shop by category</h2>
+        <p className="mt-3 max-w-xl text-sm text-white/55">Explore considered essentials and everyday luxuries, selected for the way you live, study, and work.</p>
+      </div>
+      <div className="luxury-container mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
         {topLevel.slice(0, 12).map((category, index) => (
           <Link
             key={category.id}
             to={`/products?categoryId=${category.id}`}
-            className={`flex flex-col items-center justify-center gap-2 rounded-lg bg-gradient-to-br p-4 text-center text-white shadow-sm transition-transform hover:scale-[1.03] ${
+            className={`flex min-h-32 flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-gradient-to-br p-4 text-center shadow-sm transition-transform hover:-translate-y-1 hover:border-[#F7C87F]/50 ${
               TILE_GRADIENTS[index % TILE_GRADIENTS.length]
             }`}
           >
