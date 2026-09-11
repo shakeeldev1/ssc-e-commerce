@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/Card';
+import { DashboardBarChart, DashboardPageHeader, DashboardStat } from '@/components/dashboard/DashboardWidgets';
 import { useAdminOrders, useAdminReturns, useAdminVendors, useLowStock, useNetRevenue } from '@/features/admin/admin.api';
 import { formatDate, formatMoney } from '@/lib/format';
 
@@ -13,18 +14,16 @@ export const AdminOverviewPage = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Platform operations</p>
-        <h1 className="mt-2 text-3xl font-bold text-ink-950">Admin overview</h1>
-        <p className="mt-2 text-sm text-slate-500">A clear view of the areas that need attention across SSC.</p>
-      </div>
+      <DashboardPageHeader eyebrow="Platform operations" title="Admin overview" description="A clear view of the areas that need attention across SSC." action={<button type="button" className="rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-800">Download report</button>} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric label="30-day net revenue" value={revenue ? formatMoney(revenue.netRevenue) : 'Loading'} />
-        <Metric label="Orders" value={orders?.total ?? 0} />
-        <Metric label="Pending vendors" value={pendingVendors.length} />
-        <Metric label="Low-stock items" value={lowStock?.length ?? 0} />
+        <DashboardStat label="30-day net revenue" value={revenue ? formatMoney(revenue.netRevenue) : 'Loading'} detail="After refunds and commissions" icon="$" tone="gold" />
+        <DashboardStat label="Orders" value={orders?.total ?? 0} detail="Across retail channels" icon="▤" tone="blue" />
+        <DashboardStat label="Pending vendors" value={pendingVendors.length} detail="Require review" icon="◇" tone="violet" />
+        <DashboardStat label="Low-stock items" value={lowStock?.length ?? 0} detail="Below threshold" icon="!" tone="green" />
       </div>
+
+      <Card className="p-6"><div className="flex items-start justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">Performance</p><h2 className="mt-2 text-xl font-bold text-slate-950">Order volume</h2><p className="mt-1 text-xs text-slate-400">Recent orders grouped by status</p></div><span className="rounded-lg bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500">Live data</span></div><div className="mt-6"><DashboardBarChart values={['pending', 'confirmed', 'processing', 'shipped', 'delivered'].map((status) => ({ label: status.slice(0, 3), value: orders?.items.filter((order) => order.status === status).length ?? 0 }))} /></div></Card>
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_1fr]">
         <Card className="p-6">
@@ -42,7 +41,5 @@ export const AdminOverviewPage = () => {
     </div>
   );
 };
-
-const Metric = ({ label, value }: { label: string; value: string | number }) => <Card className="p-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</p><p className="mt-3 text-2xl font-bold text-ink-950">{value}</p></Card>;
 
 const AttentionCard = ({ title, count, items }: { title: string; count: number; items: string[] }) => <Card className="p-6"><div className="flex items-center justify-between"><h2 className="font-bold text-ink-950">{title}</h2><span className="rounded-full bg-brand-100 px-2 py-1 text-xs font-bold text-brand-700">{count}</span></div><div className="mt-5 space-y-3">{items.map((item) => <p key={item} className="truncate text-sm text-slate-600">{item}</p>)}{items.length === 0 && <p className="text-sm text-slate-400">Nothing needs attention.</p>}</div></Card>;

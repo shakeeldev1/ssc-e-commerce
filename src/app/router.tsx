@@ -67,44 +67,7 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
-          {
-            element: <CustomerDashboardLayout />,
-            children: [
-              { path: 'account', element: <AccountDashboardPage /> },
-              { path: 'cart', element: <CartPage /> },
-              { path: 'orders', element: <OrdersListPage /> },
-              { path: 'orders/:id', element: <OrderDetailPage /> },
-            ],
-          },
           { path: 'checkout', element: <CheckoutPage /> },
-        ],
-      },
-      {
-        element: <WholesaleBuyerProtectedRoute />,
-        children: [
-          {
-            element: <WholesaleBuyerDashboardLayout />,
-            children: [
-              { path: 'wholesale/dashboard', element: <WholesaleBuyerOverviewPage /> },
-              { path: 'wholesale/catalogue', element: <WholesaleCataloguePage /> },
-              { path: 'wholesale/orders', element: <WholesaleOrdersPage /> },
-              { path: 'wholesale/quotes', element: <WholesaleQuotesPage /> },
-            ],
-          },
-        ],
-      },
-      {
-        element: <VendorProtectedRoute />,
-        children: [
-          {
-            element: <VendorDashboardLayout />,
-            children: [
-              { path: 'vendor/dashboard', element: <VendorOverviewPage /> },
-              { path: 'vendor/products', element: <VendorProductsPage /> },
-              { path: 'vendor/quotes', element: <VendorQuotesPage /> },
-              { path: 'vendor/profile', element: <VendorProfilePage /> },
-            ],
-          },
         ],
       },
       { path: '*', element: <NotFoundPage /> },
@@ -119,6 +82,48 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <AdminOverviewPage /> },
           { path: 'users', element: <AdminUsersPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <CustomerDashboardLayout />,
+        children: [
+          { path: '/account', element: <AccountDashboardPage /> },
+          { path: '/cart', element: <CartPage /> },
+          { path: '/orders', element: <OrdersListPage /> },
+          { path: '/orders/:id', element: <OrderDetailPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    element: <WholesaleBuyerProtectedRoute />,
+    children: [
+      {
+        element: <WholesaleBuyerDashboardLayout />,
+        children: [
+          { path: '/wholesale/dashboard', element: <WholesaleBuyerOverviewPage /> },
+          { path: '/wholesale/catalogue', element: <WholesaleCataloguePage /> },
+          { path: '/wholesale/orders', element: <WholesaleOrdersPage /> },
+          { path: '/wholesale/quotes', element: <WholesaleQuotesPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    element: <VendorProtectedRoute />,
+    children: [
+      {
+        element: <VendorDashboardLayout />,
+        children: [
+          { path: '/vendor/dashboard', element: <VendorOverviewPage /> },
+          { path: '/vendor/products', element: <VendorProductsPage /> },
+          { path: '/vendor/quotes', element: <VendorQuotesPage /> },
+          { path: '/vendor/profile', element: <VendorProfilePage /> },
         ],
       },
     ],

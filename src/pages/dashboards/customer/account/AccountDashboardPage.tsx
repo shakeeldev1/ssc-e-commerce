@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
+import { DashboardBarChart, DashboardPageHeader, DashboardStat } from '@/components/dashboard/DashboardWidgets';
 import { Spinner } from '@/components/ui/Spinner';
 import { useCurrentUser } from '@/features/auth/auth.api';
 import { useCart } from '@/features/cart/cart.api';
@@ -18,17 +19,15 @@ export const AccountDashboardPage = () => {
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Customer dashboard</p>
-        <h1 className="mt-2 text-3xl font-bold text-ink-950">Hello, {user?.fullName?.split(' ')[0] ?? 'there'}</h1>
-        <p className="mt-2 text-sm text-slate-500">Your account, smart card, and shopping activity in one place.</p>
-      </header>
+      <DashboardPageHeader eyebrow="Customer dashboard" title={`Hello, ${user?.fullName?.split(' ')[0] ?? 'there'}`} description="Your account, Smart Card, and shopping activity in one place." action={<Link to="/products" className="rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-800">Continue shopping</Link>} />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <DashboardMetric label="Orders" value={orders?.total?.toString() ?? '0'} href="/orders" />
-        <DashboardMetric label="Cart items" value={cart?.totalItems?.toString() ?? '0'} href="/cart" />
-        <DashboardMetric label="Smart Card" value={card?.status ?? 'Not linked'} />
+        <DashboardStat label="Orders" value={orders?.total ?? 0} detail="View your purchase history" icon="▤" tone="blue" />
+        <DashboardStat label="Cart items" value={cart?.totalItems ?? 0} detail="Ready for checkout" icon="□" tone="gold" />
+        <DashboardStat label="Smart Card" value={card?.status ?? 'Not linked'} detail="Membership status" icon="◇" tone="violet" />
       </div>
+
+      <Card className="p-6"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">Order journey</p><h2 className="mt-2 text-xl font-bold text-slate-950">Your order status</h2></div><div className="mt-6"><DashboardBarChart values={['pending', 'confirmed', 'processing', 'shipped', 'delivered'].map((status) => ({ label: status.slice(0, 3), value: orders?.items.filter((order) => order.status === status).length ?? 0 }))} /></div></Card>
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <Card className="p-6">
@@ -68,7 +67,3 @@ export const AccountDashboardPage = () => {
   );
 };
 
-const DashboardMetric = ({ label, value, href }: { label: string; value: string; href?: string }) => {
-  const content = <Card className="p-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</p><p className="mt-3 text-2xl font-bold capitalize text-ink-950">{value}</p></Card>;
-  return href ? <Link to={href} className="block hover:-translate-y-0.5">{content}</Link> : content;
-};

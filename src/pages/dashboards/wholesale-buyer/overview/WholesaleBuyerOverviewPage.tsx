@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
+import { DashboardBarChart, DashboardPageHeader, DashboardStat } from '@/components/dashboard/DashboardWidgets';
 import { useCurrentUser } from '@/features/auth/auth.api';
 import { useMyQuoteRequests, useWholesaleCart, useWholesaleOrders } from '@/features/wholesale/wholesale.api';
 import { formatDate, formatMoney } from '@/lib/format';
@@ -12,17 +13,15 @@ export const WholesaleBuyerOverviewPage = () => {
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Wholesale buyer dashboard</p>
-        <h1 className="mt-2 text-3xl font-bold text-ink-950">Welcome, {user?.fullName?.split(' ')[0] ?? 'buyer'}</h1>
-        <p className="mt-2 text-sm text-slate-500">Manage bulk purchasing, quote requests, and wholesale orders.</p>
-      </header>
+      <DashboardPageHeader eyebrow="Wholesale buyer dashboard" title={`Welcome, ${user?.fullName?.split(' ')[0] ?? 'buyer'}`} description="Manage bulk purchasing, quote requests, and wholesale orders." action={<Link to="/wholesale/catalogue" className="rounded-xl bg-[#8a5b16] px-4 py-2.5 text-xs font-semibold text-white hover:bg-[#6f4d17]">Browse catalogue</Link>} />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Metric label="Cart items" value={cart?.totalItems ?? 0} href="/wholesale/catalogue" />
-        <Metric label="Wholesale orders" value={orders?.total ?? 0} href="/wholesale/orders" />
-        <Metric label="Open quote requests" value={quotes?.filter((quote) => quote.status === 'open').length ?? 0} href="/wholesale/quotes" />
+        <DashboardStat label="Cart items" value={cart?.totalItems ?? 0} detail="Bulk items ready" icon="□" tone="gold" />
+        <DashboardStat label="Wholesale orders" value={orders?.total ?? 0} detail="All-time orders" icon="▤" tone="blue" />
+        <DashboardStat label="Open quote requests" value={quotes?.filter((quote) => quote.status === 'open').length ?? 0} detail="Awaiting response" icon="◇" tone="violet" />
       </div>
+
+      <Card className="p-6"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">Procurement pulse</p><h2 className="mt-2 text-xl font-bold text-slate-950">Order status</h2></div><div className="mt-6"><DashboardBarChart values={['pending', 'confirmed', 'processing', 'shipped', 'delivered'].map((status) => ({ label: status.slice(0, 3), value: orders?.items.filter((order) => order.status === status).length ?? 0 }))} /></div></Card>
 
       <Card className="p-6">
         <div className="flex items-center justify-between gap-4">
@@ -43,6 +42,3 @@ export const WholesaleBuyerOverviewPage = () => {
   );
 };
 
-const Metric = ({ label, value, href }: { label: string; value: number; href: string }) => (
-  <Link to={href}><Card className="p-5 transition-transform hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</p><p className="mt-3 text-2xl font-bold text-ink-950">{value}</p></Card></Link>
-);

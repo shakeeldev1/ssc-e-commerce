@@ -1,42 +1,8 @@
-import { NavLink, Outlet } from 'react-router-dom';
-
-const NAV_ITEMS = [
-  { to: '/account', label: 'Overview', end: true },
-  { to: '/orders', label: 'Orders' },
-  { to: '/cart', label: 'Cart' },
-  { to: '/smart-card', label: 'Smart Card' },
-];
+import { Outlet } from 'react-router-dom';
+import { DashboardShell } from '@/components/dashboard/DashboardShell';
 
 export const CustomerDashboardLayout = () => (
-  <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 lg:flex-row lg:px-8">
-    <aside className="w-full shrink-0 lg:w-56">
-      <div className="rounded-sm border border-slate-200 bg-white p-3 shadow-sm">
-        <p className="px-3 pb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-600">
-          My workspace
-        </p>
-        <nav className="space-y-1" aria-label="Customer dashboard">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                `block rounded-sm px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-ink-950 text-white'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-ink-950'
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
-    </aside>
-
-    <section className="min-w-0 flex-1">
-      <Outlet />
-    </section>
-  </div>
+  <DashboardShell config={{ eyebrow: 'Customer workspace', title: 'My SSC', description: 'Your personal shopping and Smart Card workspace', icon: 'S', accentClass: 'bg-slate-950', groups: [{ label: 'Workspace', items: [{ to: '/account', label: 'Overview', end: true, icon: '⌂' }, { to: '/orders', label: 'Orders', icon: '▤' }, { to: '/cart', label: 'Cart', icon: '□' }] }, { label: 'Membership', items: [{ to: '/smart-card', label: 'Smart Card', icon: '◇' }, { to: '/student-benefits', label: 'Benefits', icon: '✦' }] }] }}>
+    <Outlet />
+  </DashboardShell>
 );
