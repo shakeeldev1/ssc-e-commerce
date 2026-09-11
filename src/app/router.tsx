@@ -13,11 +13,11 @@ import { AdminLayout } from '@/layouts/AdminLayout';
 import { AdminProtectedRoute } from '@/layouts/AdminProtectedRoute';
 import { MainLayout } from '@/layouts/MainLayout';
 import { CustomerDashboardLayout } from '@/layouts/CustomerDashboardLayout';
+import { CustomerProtectedRoute } from '@/layouts/CustomerProtectedRoute';
 import { WholesaleBuyerDashboardLayout } from '@/layouts/WholesaleBuyerDashboardLayout';
 import { WholesaleBuyerProtectedRoute } from '@/layouts/WholesaleBuyerProtectedRoute';
 import { VendorDashboardLayout } from '@/layouts/VendorDashboardLayout';
 import { VendorProtectedRoute } from '@/layouts/VendorProtectedRoute';
-import { ProtectedRoute } from '@/layouts/ProtectedRoute';
 import { AdminOverviewPage } from '@/pages/dashboards/admin/overview/AdminOverviewPage';
 import { AdminUsersPage } from '@/pages/dashboards/admin/users/AdminUsersPage';
 import { AdminOrdersPage } from '@/pages/dashboards/admin/orders/AdminOrdersPage';
@@ -85,7 +85,7 @@ export const router = createBrowserRouter([
   },
   { path: '/admin', element: <Navigate to="/super-admin" replace /> },
   {
-    element: <ProtectedRoute />,
+    element: <CustomerProtectedRoute />,
     children: [
       {
         element: <CustomerDashboardLayout />,

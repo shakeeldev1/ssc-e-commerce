@@ -54,7 +54,14 @@ export interface AdminUserFilters {
 export const useAdminUsers = (filters: AdminUserFilters = {}) => useQuery({
   queryKey: ['admin', 'users', filters],
   queryFn: async () => {
-    const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<AdminUser>>>('/users', { params: { page: filters.page ?? 1, limit: filters.limit ?? 12, ...filters } });
+    const params = {
+      page: filters.page ?? 1,
+      limit: filters.limit ?? 12,
+      ...(filters.search ? { search: filters.search } : {}),
+      ...(filters.role ? { role: filters.role } : {}),
+      ...(filters.status ? { status: filters.status } : {}),
+    };
+    const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<AdminUser>>>('/users', { params });
     return data.data;
   },
 });

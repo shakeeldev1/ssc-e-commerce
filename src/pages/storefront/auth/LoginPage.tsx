@@ -7,6 +7,10 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useLogin } from '@/features/auth/auth.api';
+import { useAuthStore } from '@/features/auth/auth.store';
+import type { CurrentUser } from '@/features/auth/auth.types';
+import { apiClient } from '@/lib/api-client';
+import type { ApiEnvelope } from '@/lib/api-types';
 import { getApiErrorMessage } from '@/lib/api-types';
 
 const loginSchema = z.object({
@@ -20,6 +24,7 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const login = useLogin();
+  const setUser = useAuthStore((state) => state.setUser);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -32,8 +37,20 @@ export const LoginPage = () => {
     setServerError(null);
     try {
       await login.mutateAsync(values);
-      const redirectTo = (location.state as { from?: string } | null)?.from ?? '/';
-      navigate(redirectTo, { replace: true });
+      const { data } = await apiClient.get<ApiEnvelope<CurrentUser>>('/auth/me');
+      setUser(data.data);
+      const destinations: Record<string, string> = {
+        super_admin: '/super-admin',
+        vendor: '/vendor/dashboard',
+        wholesale_vendor: '/vendor/dashboard',
+        wholesale_buyer: '/wholesale/dashboard',
+        student: '/customer/dashboard',
+      };
+      const requestedPath = (location.state as { from?: string } | null)?.from;
+      const destination = requestedPath && requestedPath !== '/orders' && requestedPath !== '/admin'
+        ? requestedPath
+        : destinations[data.data.role] ?? '/';
+      navigate(destination, { replace: true });
     } catch (error) {
       setServerError(getApiErrorMessage(error, 'Could not sign you in'));
     }

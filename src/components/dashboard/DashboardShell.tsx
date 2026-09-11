@@ -7,6 +7,7 @@ export interface DashboardNavItem {
   label: string;
   end?: boolean;
   icon: string;
+  disabled?: boolean;
 }
 
 export interface DashboardNavGroup {
@@ -56,10 +57,7 @@ export const DashboardShell = ({ config, children }: { config: DashboardConfig; 
                 <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">{group.label}</p>
                 <div className="space-y-1">
                   {group.items.map((item) => (
-                    <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? `${config.accentClass} text-white shadow-sm` : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'}`}>
-                      <span className="flex h-5 w-5 items-center justify-center text-xs opacity-80">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </NavLink>
+                    item.disabled ? <span key={item.label} className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300" title="This workspace page is not available yet"><span className="flex h-5 w-5 items-center justify-center text-xs">{item.icon}</span><span>{item.label}</span><span className="ml-auto text-[9px] uppercase tracking-wider">Soon</span></span> : <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? `${config.accentClass} text-white shadow-sm` : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'}`}><span className="flex h-5 w-5 items-center justify-center text-xs opacity-80">{item.icon}</span><span>{item.label}</span></NavLink>
                   ))}
                 </div>
               </div>
@@ -75,7 +73,7 @@ export const DashboardShell = ({ config, children }: { config: DashboardConfig; 
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
           <div className="mb-6 flex gap-2 overflow-x-auto lg:hidden">
             {config.groups.flatMap((group) => group.items).map((item) => (
-              <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `shrink-0 rounded-full border px-3 py-2 text-xs font-semibold ${isActive ? `${config.accentClass} border-transparent text-white` : 'border-slate-200 bg-white text-slate-600'}`}>{item.label}</NavLink>
+              item.disabled ? <span key={item.label} className="shrink-0 rounded-full border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-300">{item.label}</span> : <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `shrink-0 rounded-full border px-3 py-2 text-xs font-semibold ${isActive ? `${config.accentClass} border-transparent text-white` : 'border-slate-200 bg-white text-slate-600'}`}>{item.label}</NavLink>
             ))}
           </div>
           {children}
