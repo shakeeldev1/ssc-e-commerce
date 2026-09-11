@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import type { ApiEnvelope, PaginatedResult } from '@/lib/api-types';
-import type { Order } from '@/features/orders/orders.types';
+import type { Order, OrderStatus } from '@/features/orders/orders.types';
 import type { VendorProfile } from '@/features/vendors/vendors.types';
 
 interface InventoryAlert {
@@ -32,13 +32,37 @@ export interface NetRevenueReport {
   netRevenue: number;
 }
 
-export const useAdminOrders = () => useQuery({
-  queryKey: ['admin', 'orders'],
+export interface AdminOrderFilters {
+  status?: OrderStatus;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const useAdminOrders = (filters: AdminOrderFilters = {}) => useQuery({
+  queryKey: ['admin', 'orders', filters],
   queryFn: async () => {
-    const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<Order>>>('/orders/admin', { params: { page: 1, limit: 8 } });
+    const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<Order>>>('/orders/admin', { params: { page: filters.page ?? 1, limit: filters.limit ?? 8, ...filters } });
     return data.data;
   },
 });
+
+export const useAdminOrderStats = () => {
+  const statuses: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'];
+  const queries = useQueries({ queries: statuses.map((status) => ({ queryKey: ['admin', 'orders', 'stats', status], queryFn: async () => { const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<Order>>>('/orders/admin', { params: { status, page: 1, limit: 1 } }); return data.data.total; } })) });
+  return { counts: Object.fromEntries(statuses.map((status, index) => [status, queries[index]?.data ?? 0])) as Record<OrderStatus, number>, isLoading: queries.some((query) => query.isLoading) };
+};
+
+export const useUpdateAdminOrderStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { orderId: string; status: OrderStatus; note?: string }) => {
+      const { data } = await apiClient.patch<ApiEnvelope<Order>>(`/orders/${input.orderId}/status`, { status: input.status, note: input.note });
+      return data.data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] }),
+  });
+};
 
 export const useAdminVendors = () => useQuery({
   queryKey: ['admin', 'vendors'],

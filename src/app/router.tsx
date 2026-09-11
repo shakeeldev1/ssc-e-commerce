@@ -20,6 +20,7 @@ import { VendorProtectedRoute } from '@/layouts/VendorProtectedRoute';
 import { ProtectedRoute } from '@/layouts/ProtectedRoute';
 import { AdminOverviewPage } from '@/pages/dashboards/admin/overview/AdminOverviewPage';
 import { AdminUsersPage } from '@/pages/dashboards/admin/users/AdminUsersPage';
+import { AdminOrdersPage } from '@/pages/dashboards/admin/orders/AdminOrdersPage';
 import { AboutPage } from '@/pages/storefront/about/AboutPage';
 import { AccountDashboardPage } from '@/pages/dashboards/customer/account/AccountDashboardPage';
 import { ContactPage } from '@/pages/storefront/contact/ContactPage';
@@ -82,6 +83,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <AdminOverviewPage /> },
           { path: 'users', element: <AdminUsersPage /> },
+          { path: 'orders', element: <AdminOrdersPage /> },
         ],
       },
     ],
