@@ -12,7 +12,7 @@ export const MainLayout = () => {
 
       <main
         className={`w-full flex-1 ${
-          isHomePage ? '' : 'mx-auto max-w-6xl px-4 py-8 sm:px-6'
+          isHomePage ? '' : pathname === '/products' ? '' : 'mx-auto max-w-6xl px-4 py-8 sm:px-6'
         }`}
       >
         <Outlet />

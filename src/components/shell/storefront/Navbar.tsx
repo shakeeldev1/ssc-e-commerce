@@ -2,8 +2,10 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCurrentUser, useLogout } from '@/features/auth/auth.api';
 import { useAuthStore } from '@/features/auth/auth.store';
-import { useCart } from '@/features/cart/cart.api';
+import { useCart, useRemoveCartItem, useUpdateCartItem } from '@/features/cart/cart.api';
+import type { CartSummary } from '@/features/cart/cart.types';
 import { useCategories } from '@/features/catalog/catalog.api';
+import { formatMoney } from '@/lib/format';
 
 const CartIcon = () => (
   <svg
@@ -113,6 +115,7 @@ export const Navbar = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const topCategories = (categories ?? [])
@@ -153,6 +156,7 @@ export const Navbar = () => {
   useEffect(() => {
     setMenuOpen(false);
     setAccountMenuOpen(false);
+    setCartOpen(false);
   }, [location.pathname]);
 
   return (
@@ -260,7 +264,7 @@ export const Navbar = () => {
                     role="menu"
                   >
                     <Link
-                      to="/account"
+                      to="/customer/dashboard"
                       onClick={() => setAccountMenuOpen(false)}
                       className="block px-4 py-2.5 text-sm transition-colors hover:bg-white/5 hover:text-[#F7C87F]"
                       role="menuitem"
@@ -301,8 +305,9 @@ export const Navbar = () => {
             )}
 
             {/* Cart */}
-            <Link
-              to="/customer/cart"
+            <button
+              type="button"
+              onClick={() => (isAuthenticated ? setCartOpen(true) : navigate('/login'))}
               className="relative flex items-center gap-2 rounded-md px-2 py-1.5 text-white/90 transition-colors hover:bg-white/5 hover:text-[#F7C97F]"
               aria-label={`Cart${
                 cart?.totalItems ? `, ${cart.totalItems} items` : ''
@@ -319,7 +324,7 @@ export const Navbar = () => {
               </div>
 
               <span className="hidden text-[11px] font-medium sm:block">Cart</span>
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -464,6 +469,29 @@ export const Navbar = () => {
           </nav>
         </div>
       )}
+
+      {cartOpen && <CartDrawer cart={cart} onClose={() => setCartOpen(false)} />}
     </header>
+  );
+};
+
+const CartDrawer = ({ cart, onClose }: { cart?: CartSummary; onClose: () => void }) => {
+  const updateItem = useUpdateCartItem();
+  const removeItem = useRemoveCartItem();
+
+  return (
+    <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="Shopping cart">
+      <button type="button" aria-label="Close cart" onClick={onClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-[#F7C87F]/20 bg-[#0b151e] text-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
+          <div><p className="luxury-kicker">Your selection</p><h2 className="mt-1 font-serif text-2xl">Shopping cart</h2></div>
+          <button type="button" onClick={onClose} className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/65 hover:border-[#F7C87F] hover:text-[#F7C87F]">Close</button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-5 py-5">
+          {!cart || cart.items.length === 0 ? <div className="flex h-full flex-col items-center justify-center text-center"><p className="font-serif text-2xl">Your cart is empty</p><p className="mt-2 max-w-xs text-sm leading-6 text-white/45">Add something useful and it will appear here instantly.</p><Link to="/products" onClick={onClose} className="mt-6 rounded-sm bg-[#F7C87F] px-5 py-3 text-xs font-bold text-[#071019]">Browse products</Link></div> : <div className="space-y-4">{cart.items.map((item) => <div key={item.id} className="flex gap-3 border-b border-white/10 pb-4"><div className="h-20 w-20 shrink-0 overflow-hidden rounded bg-[#172633]">{item.productVariant.product.images[0] ? <img src={item.productVariant.product.images[0].url} alt={item.productVariant.product.name} className="h-full w-full object-cover" /> : <span className="flex h-full items-center justify-center text-2xl text-white/30">{item.productVariant.product.name.charAt(0)}</span>}</div><div className="min-w-0 flex-1"><p className="line-clamp-2 text-sm font-semibold">{item.productVariant.product.name}</p><p className="mt-1 text-sm font-bold text-[#F7C87F]">{formatMoney(item.productVariant.price)}</p><div className="mt-2 flex items-center gap-2"><button type="button" onClick={() => updateItem.mutate({ variantId: item.productVariantId, quantity: Math.max(1, item.quantity - 1) })} className="h-6 w-6 rounded border border-white/15 text-xs">-</button><span className="min-w-5 text-center text-xs">{item.quantity}</span><button type="button" onClick={() => updateItem.mutate({ variantId: item.productVariantId, quantity: item.quantity + 1 })} className="h-6 w-6 rounded border border-white/15 text-xs">+</button><button type="button" onClick={() => removeItem.mutate(item.productVariantId)} className="ml-2 text-[11px] text-white/40 hover:text-red-300">Remove</button></div></div></div>)}</div>}
+        </div>
+        {cart && cart.items.length > 0 && <div className="border-t border-white/10 px-5 py-5"><div className="flex items-center justify-between"><span className="text-sm text-white/55">Subtotal</span><span className="text-lg font-bold text-[#F7C87F]">{formatMoney(cart.subtotal)}</span></div><div className="mt-4 grid grid-cols-2 gap-3"><Link to="/customer/cart" onClick={onClose} className="rounded-sm border border-white/20 px-4 py-3 text-center text-xs font-semibold text-white hover:border-[#F7C87F]">View cart</Link><Link to="/customer/checkout" onClick={onClose} className="rounded-sm bg-[#F7C87F] px-4 py-3 text-center text-xs font-bold text-[#071019]">Checkout</Link></div></div>}
+      </aside>
+    </div>
   );
 };
