@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9ebff;
+  --color-brand-200: #b9d8ff;
+  --color-brand-500: #2f6fed;
+  --color-brand-600: #2558c4;
+  --color-brand-700: #1d449b;
+  --color-brand-900: #142d68;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* Hides the scrollbar on horizontal product/category rails while staying scrollable. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
