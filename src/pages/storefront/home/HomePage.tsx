@@ -1,9 +1,9 @@
-import { AppDownloadSection } from '@/pages/main/home/AppDownloadSection';
-import { BenefitsSection } from '@/pages/main/home/BenefitsSection';
-import { FeaturedVendorsSection } from '@/pages/main/home/FeaturedVendorsSection';
-import { HomeHero } from '@/pages/main/home/HomeHero';
-import { HowItWorks } from '@/pages/main/home/HowItWorks';
-import { SmartCardIntro } from '@/pages/main/home/SmartCardIntro';
+import { AppDownloadSection } from '@/pages/storefront/home/AppDownloadSection';
+import { BenefitsSection } from '@/pages/storefront/home/BenefitsSection';
+import { FeaturedVendorsSection } from '@/pages/storefront/home/FeaturedVendorsSection';
+import { HomeHero } from '@/pages/storefront/home/HomeHero';
+import { HowItWorks } from '@/pages/storefront/home/HowItWorks';
+import { SmartCardIntro } from '@/pages/storefront/home/SmartCardIntro';
 import { CategoryTiles } from '@/features/catalog/CategoryTiles';
 import { ProductRail } from '@/features/catalog/ProductRail';
 
