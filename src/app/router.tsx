@@ -12,6 +12,7 @@ import { VendorsSellWithUsPage } from '@/pages/storefront/vendors/VendorsSellWit
 import { AdminLayout } from '@/layouts/AdminLayout';
 import { AdminProtectedRoute } from '@/layouts/AdminProtectedRoute';
 import { MainLayout } from '@/layouts/MainLayout';
+import { AuthLayout } from '@/layouts/AuthLayout';
 import { CustomerDashboardLayout } from '@/layouts/CustomerDashboardLayout';
 import { CustomerProtectedRoute } from '@/layouts/CustomerProtectedRoute';
 import { WholesaleBuyerDashboardLayout } from '@/layouts/WholesaleBuyerDashboardLayout';
@@ -50,10 +51,6 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'products', element: <ProductListPage /> },
       { path: 'products/:id', element: <ProductDetailPage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'register', element: <RegisterPage /> },
-      { path: 'verify-email', element: <VerifyEmailPage /> },
-
       { path: 'about', element: <AboutPage /> },
       { path: 'smart-card', element: <SmartCardPage /> },
       { path: 'student-benefits', element: <StudentBenefitsPage /> },
@@ -67,6 +64,14 @@ export const router = createBrowserRouter([
 
       { path: 'checkout', element: <Navigate to="/customer/checkout" replace /> },
       { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: '/login', element: <LoginPage /> },
+      { path: '/register', element: <RegisterPage /> },
+      { path: '/verify-email', element: <VerifyEmailPage /> },
     ],
   },
   {

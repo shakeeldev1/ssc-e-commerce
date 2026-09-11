@@ -58,7 +58,9 @@ export const LoginPage = () => {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-bold text-slate-900">Sign in</h1>
+      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#c48a2c]">Welcome back</p>
+      <h1 className="mt-3 font-serif text-4xl text-slate-950">Sign in to SSC</h1>
+      <p className="mt-3 text-sm leading-6 text-slate-500">Access your orders, Smart Card benefits, and personalized workspace.</p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         {serverError && <Alert tone="error">{serverError}</Alert>}
@@ -75,7 +77,7 @@ export const LoginPage = () => {
           {...register('password')}
           error={errors.password?.message}
         />
-        <Button type="submit" className="w-full" isLoading={isSubmitting} size="lg">
+        <Button type="submit" variant="secondary" className="w-full" isLoading={isSubmitting} size="lg">
           Sign in
         </Button>
       </form>

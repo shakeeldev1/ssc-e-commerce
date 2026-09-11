@@ -55,8 +55,9 @@ export const RegisterPage = () => {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#c48a2c]">Join SSC</p>
+      <h1 className="mt-3 font-serif text-4xl text-slate-950">Create your account</h1>
+      <p className="mt-3 text-sm leading-6 text-slate-500">
         Students and wholesale buyers can sign up here. Already have a card? You can link it after
         verifying your email.
       </p>
@@ -95,7 +96,7 @@ export const RegisterPage = () => {
           <option value="wholesale_buyer">Wholesale buyer</option>
         </Select>
 
-        <Button type="submit" className="w-full" isLoading={isSubmitting} size="lg">
+        <Button type="submit" variant="secondary" className="w-full" isLoading={isSubmitting} size="lg">
           Create account
         </Button>
       </form>

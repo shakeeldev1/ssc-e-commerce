@@ -50,8 +50,9 @@ export const VerifyEmailPage = () => {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-bold text-slate-900">Verify your email</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#c48a2c]">One final step</p>
+      <h1 className="mt-3 font-serif text-4xl text-slate-950">Verify your email</h1>
+      <p className="mt-3 text-sm leading-6 text-slate-500">
         We sent a 6-digit code to <span className="font-medium text-slate-700">{email}</span>.
       </p>
 
@@ -65,7 +66,7 @@ export const VerifyEmailPage = () => {
           {...register('code')}
           error={errors.code?.message}
         />
-        <Button type="submit" className="w-full" isLoading={isSubmitting} size="lg">
+        <Button type="submit" variant="secondary" className="w-full" isLoading={isSubmitting} size="lg">
           Verify & continue
         </Button>
       </form>
