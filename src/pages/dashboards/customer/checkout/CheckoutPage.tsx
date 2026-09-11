@@ -53,7 +53,7 @@ export const CheckoutPage = () => {
   }
 
   if (!cart || cart.items.length === 0) {
-    return <Navigate to="/cart" replace />;
+    return <Navigate to="/customer/cart" replace />;
   }
 
   const total = Math.max(0, cart.subtotal - discountAmount);
@@ -77,7 +77,7 @@ export const CheckoutPage = () => {
         campaignCode: campaignCode ?? undefined,
       });
       reset();
-      navigate(`/orders/${order.id}`, { state: { justPlaced: true } });
+      navigate(`/customer/orders/${order.id}`, { state: { justPlaced: true } });
     } catch (error) {
       setServerError(getApiErrorMessage(error, 'Could not place your order'));
     }

@@ -49,7 +49,7 @@ const TrackOrderList = () => {
 
       <div className="mx-auto max-w-2xl space-y-3">
         {data?.items.map((order) => (
-          <Link key={order.id} to={`/orders/${order.id}`}>
+          <Link key={order.id} to={`/customer/orders/${order.id}`}>
             <Card className="flex items-center justify-between p-4 hover:shadow-md">
               <div>
                 <span className="font-medium text-slate-800">{order.orderNumber}</span>

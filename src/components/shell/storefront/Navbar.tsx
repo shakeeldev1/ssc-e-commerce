@@ -269,7 +269,7 @@ export const Navbar = () => {
                     </Link>
 
                     <Link
-                      to="/orders"
+                      to="/customer/orders"
                       onClick={() => setAccountMenuOpen(false)}
                       className="block px-4 py-2.5 text-sm transition-colors hover:bg-white/5 hover:text-[#F7C87F]"
                       role="menuitem"
@@ -302,7 +302,7 @@ export const Navbar = () => {
 
             {/* Cart */}
             <Link
-              to="/cart"
+              to="/customer/cart"
               className="relative flex items-center gap-2 rounded-md px-2 py-1.5 text-white/90 transition-colors hover:bg-white/5 hover:text-[#F7C97F]"
               aria-label={`Cart${
                 cart?.totalItems ? `, ${cart.totalItems} items` : ''
@@ -415,7 +415,7 @@ export const Navbar = () => {
                   </Link>
 
                   <Link
-                    to="/orders"
+                    to="/customer/orders"
                     onClick={closeMenus}
                     className="block rounded-md px-3 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-[#F7C97F]"
                   >

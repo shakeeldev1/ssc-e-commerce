@@ -1,49 +1,24 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { DashboardBarChart, DashboardPageHeader, DashboardStat } from '@/components/dashboard/DashboardWidgets';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
 import { useMyOrders } from '@/features/orders/orders.api';
+import type { OrderStatus } from '@/features/orders/orders.types';
 import { OrderStatusBadge } from '@/features/orders/OrderStatusBadge';
 import { formatDate, formatMoney } from '@/lib/format';
 
+const STATUSES: Array<{ value: OrderStatus | ''; label: string }> = [
+  { value: '', label: 'All orders' }, { value: 'pending', label: 'Pending' }, { value: 'processing', label: 'Processing' }, { value: 'shipped', label: 'Shipped' }, { value: 'delivered', label: 'Delivered' }, { value: 'cancelled', label: 'Cancelled' },
+];
+
 export const OrdersListPage = () => {
   const { data, isLoading } = useMyOrders();
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<OrderStatus | ''>('');
+  const allOrders = data?.items ?? [];
+  const visibleOrders = allOrders.filter((order) => { const matchesStatus = !status || order.status === status; const query = search.trim().toLowerCase(); return matchesStatus && (!query || order.orderNumber.toLowerCase().includes(query) || order.invoiceNumber.toLowerCase().includes(query)); });
+  const count = (value: OrderStatus) => allOrders.filter((order) => order.status === value).length;
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-24">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!data || data.items.length === 0) {
-    return (
-      <div className="py-24 text-center">
-        <p className="text-slate-500">You haven't placed any orders yet.</p>
-        <Link to="/products" className="mt-4 inline-block font-medium text-brand-600">
-          Browse products
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-900">My orders</h1>
-      {data.items.map((order) => (
-        <Link key={order.id} to={`/orders/${order.id}`}>
-          <Card className="flex items-center justify-between p-4 hover:shadow-md">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-slate-800">{order.orderNumber}</span>
-                <OrderStatusBadge status={order.status} />
-              </div>
-              <span className="text-xs text-slate-400">{formatDate(order.createdAt)}</span>
-            </div>
-            <span className="font-semibold text-slate-900">{formatMoney(order.totalAmount)}</span>
-          </Card>
-        </Link>
-      ))}
-    </div>
-  );
+  return <div className="space-y-8"><DashboardPageHeader eyebrow="Customer workspace" title="My orders" description="Track every purchase, payment, and delivery from one clear order register." action={<Link to="/products" className="rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-800">Shop products</Link>} /><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><DashboardStat label="Total orders" value={data?.total ?? 0} detail="All purchases" icon="▤" tone="blue" /><DashboardStat label="In progress" value={count('pending') + count('processing') + count('shipped')} detail="Moving through fulfilment" icon="↗" tone="gold" /><DashboardStat label="Delivered" value={count('delivered')} detail="Completed deliveries" icon="✓" tone="green" /><DashboardStat label="Cancelled" value={count('cancelled')} detail="Cancelled orders" icon="!" tone="violet" /></div><Card className="p-6"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">Order journey</p><h2 className="mt-2 text-xl font-bold text-slate-950">Your order status</h2></div><div className="mt-6"><DashboardBarChart values={['pending', 'processing', 'shipped', 'delivered'].map((value) => ({ label: value.slice(0, 3), value: count(value as OrderStatus) }))} /></div></Card><Card className="overflow-hidden p-0"><div className="border-b border-slate-200 p-5 sm:p-6"><div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="text-base font-bold text-slate-950">Order register</h2><p className="mt-1 text-xs text-slate-400">{visibleOrders.length} orders shown</p></div><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search order or invoice..." className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs outline-none focus:border-brand-400 focus:bg-white lg:w-64" /></div><div className="mt-4 flex flex-wrap gap-2">{STATUSES.map((option) => <button key={option.value || 'all'} type="button" onClick={() => setStatus(option.value)} className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${status === option.value ? 'border-slate-950 bg-slate-950 text-white' : 'border-slate-200 bg-white text-slate-500'}`}>{option.label}</button>)}</div></div><div className="divide-y divide-slate-100">{isLoading ? <div className="flex justify-center py-14"><Spinner /></div> : visibleOrders.map((order) => <Link key={order.id} to={`/customer/orders/${order.id}`} className="flex items-center justify-between gap-4 px-5 py-5 transition-colors hover:bg-slate-50 sm:px-6"><div><div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-slate-950">{order.orderNumber}</span><OrderStatusBadge status={order.status} /></div><p className="mt-1 text-xs text-slate-400">{order.invoiceNumber} · {formatDate(order.createdAt)}</p></div><p className="font-bold text-slate-950">{formatMoney(order.totalAmount)}</p></Link>)}{!isLoading && visibleOrders.length === 0 && <div className="px-6 py-16 text-center"><p className="text-base font-semibold text-slate-700">You haven&apos;t placed any orders yet.</p><p className="mt-2 text-sm text-slate-400">Your orders will appear here after checkout.</p><Link to="/products" className="mt-5 inline-flex rounded-xl bg-[#c48a2c] px-4 py-2.5 text-xs font-semibold text-white">Browse products</Link></div>}</div></Card></div>;
 };

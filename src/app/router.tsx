@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
 import { LoginPage } from '@/pages/storefront/auth/LoginPage';
 import { RegisterPage } from '@/pages/storefront/auth/RegisterPage';
 import { VerifyEmailPage } from '@/pages/storefront/auth/VerifyEmailPage';
@@ -65,17 +65,12 @@ export const router = createBrowserRouter([
       { path: 'contact', element: <ContactPage /> },
       { path: 'faq', element: <FaqPage /> },
 
-      {
-        element: <ProtectedRoute />,
-        children: [
-          { path: 'checkout', element: <CheckoutPage /> },
-        ],
-      },
+      { path: 'checkout', element: <Navigate to="/customer/checkout" replace /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
   {
-    path: '/admin',
+    path: '/super-admin',
     element: <AdminProtectedRoute />,
     children: [
       {
@@ -88,18 +83,24 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  { path: '/admin', element: <Navigate to="/super-admin" replace /> },
   {
     element: <ProtectedRoute />,
     children: [
       {
         element: <CustomerDashboardLayout />,
         children: [
-          { path: '/account', element: <AccountDashboardPage /> },
-          { path: '/cart', element: <CartPage /> },
-          { path: '/orders', element: <OrdersListPage /> },
-          { path: '/orders/:id', element: <OrderDetailPage /> },
+          { path: '/customer/dashboard', element: <AccountDashboardPage /> },
+          { path: '/customer/cart', element: <CartPage /> },
+          { path: '/customer/checkout', element: <CheckoutPage /> },
+          { path: '/customer/orders', element: <OrdersListPage /> },
+          { path: '/customer/orders/:id', element: <OrderDetailPage /> },
         ],
       },
+      { path: '/account', element: <Navigate to="/customer/dashboard" replace /> },
+      { path: '/cart', element: <Navigate to="/customer/cart" replace /> },
+      { path: '/orders', element: <Navigate to="/customer/orders" replace /> },
+      { path: '/orders/:id', element: <LegacyOrderRedirect /> },
     ],
   },
   {
@@ -131,3 +132,8 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+function LegacyOrderRedirect() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/customer/orders/${id ?? ''}`} replace />;
+}

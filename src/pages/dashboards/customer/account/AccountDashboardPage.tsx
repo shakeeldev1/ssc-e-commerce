@@ -36,14 +36,14 @@ export const AccountDashboardPage = () => {
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">Recent orders</p>
               <h2 className="mt-2 text-xl font-bold text-ink-950">Your latest activity</h2>
             </div>
-            <Link to="/orders" className="text-sm font-semibold text-brand-600 hover:text-brand-700">View all</Link>
+            <Link to="/customer/orders" className="text-sm font-semibold text-brand-600 hover:text-brand-700">View all</Link>
           </div>
           {ordersLoading ? <div className="flex justify-center py-10"><Spinner /></div> : recentOrders.length === 0 ? (
             <p className="py-10 text-sm text-slate-500">No orders yet. Start with something useful.</p>
           ) : (
             <div className="mt-6 divide-y divide-slate-100">
               {recentOrders.map((order) => (
-                <Link key={order.id} to={`/orders/${order.id}`} className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+                <Link key={order.id} to={`/customer/orders/${order.id}`} className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
                   <div><p className="font-semibold text-ink-950">{order.orderNumber}</p><p className="mt-1 text-xs text-slate-400">{formatDate(order.createdAt)}</p></div>
                   <div className="text-right"><p className="font-semibold text-ink-950">{formatMoney(order.totalAmount)}</p><p className="mt-1 text-xs capitalize text-slate-500">{order.status}</p></div>
                 </Link>
