@@ -49,7 +49,7 @@ export const DashboardShell = ({ config, children }: { config: DashboardConfig; 
       </header>
 
       <div className="mx-auto flex max-w-[1600px]">
-        <aside className="hidden min-h-[calc(100vh-72px)] w-64 shrink-0 border-r border-slate-200 bg-white px-4 py-6 lg:block">
+        <aside className="sticky top-[72px] hidden h-[calc(100vh-72px)] w-64 shrink-0 self-start overflow-y-auto border-r border-slate-200 bg-white px-4 py-6 lg:block">
           <nav className="space-y-7" aria-label={`${config.title} navigation`}>
             {config.groups.map((group) => (
               <div key={group.label}>
