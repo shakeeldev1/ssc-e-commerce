@@ -8,6 +8,9 @@ Planned dashboard boundaries:
 
 - `admin`: platform administration and user management
 - `customer`: account, orders, returns, and saved items
+- `wholesale-buyer`: bulk catalogue, RFQs, quotations, and wholesale orders
+- `vendor`: vendor profile, owned catalogue, and incoming RFQs for vendor roles
+- `admin`: platform operations, orders, finance, inventory, returns, and vendor oversight
 - `vendor`: catalog, inventory, orders, and vendor analytics
 - `school`: institutions, students, cards, and school reporting
 - `wholesale`: buyers, quotations, bulk orders, and account pricing

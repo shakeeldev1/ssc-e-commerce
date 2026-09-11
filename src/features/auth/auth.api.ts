@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import type { ApiEnvelope } from '@/lib/api-types';
@@ -69,11 +70,18 @@ const fetchCurrentUser = async (): Promise<CurrentUser> => {
 
 export const useCurrentUser = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
-  return useQuery({
+  const setUser = useAuthStore((state) => state.setUser);
+  const query = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: fetchCurrentUser,
     enabled: Boolean(accessToken),
     retry: false,
     staleTime: 5 * 60_000,
   });
+
+  useEffect(() => {
+    if (query.data) setUser(query.data);
+  }, [query.data, setUser]);
+
+  return query;
 };

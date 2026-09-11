@@ -12,6 +12,11 @@ import { VendorsSellWithUsPage } from '@/pages/storefront/vendors/VendorsSellWit
 import { AdminLayout } from '@/layouts/AdminLayout';
 import { AdminProtectedRoute } from '@/layouts/AdminProtectedRoute';
 import { MainLayout } from '@/layouts/MainLayout';
+import { CustomerDashboardLayout } from '@/layouts/CustomerDashboardLayout';
+import { WholesaleBuyerDashboardLayout } from '@/layouts/WholesaleBuyerDashboardLayout';
+import { WholesaleBuyerProtectedRoute } from '@/layouts/WholesaleBuyerProtectedRoute';
+import { VendorDashboardLayout } from '@/layouts/VendorDashboardLayout';
+import { VendorProtectedRoute } from '@/layouts/VendorProtectedRoute';
 import { ProtectedRoute } from '@/layouts/ProtectedRoute';
 import { AdminOverviewPage } from '@/pages/dashboards/admin/overview/AdminOverviewPage';
 import { AdminUsersPage } from '@/pages/dashboards/admin/users/AdminUsersPage';
@@ -27,6 +32,14 @@ import { SmartCardPage } from '@/pages/storefront/smart-card/SmartCardPage';
 import { StudentBenefitsPage } from '@/pages/storefront/student-benefits/StudentBenefitsPage';
 import { TrackOrderPage } from '@/pages/storefront/track-order/TrackOrderPage';
 import { WholesalePage } from '@/pages/storefront/wholesale/WholesalePage';
+import { WholesaleBuyerOverviewPage } from '@/pages/dashboards/wholesale-buyer/overview/WholesaleBuyerOverviewPage';
+import { WholesaleCataloguePage } from '@/pages/dashboards/wholesale-buyer/catalogue/WholesaleCataloguePage';
+import { WholesaleOrdersPage } from '@/pages/dashboards/wholesale-buyer/orders/WholesaleOrdersPage';
+import { WholesaleQuotesPage } from '@/pages/dashboards/wholesale-buyer/quotes/WholesaleQuotesPage';
+import { VendorOverviewPage } from '@/pages/dashboards/vendor/overview/VendorOverviewPage';
+import { VendorProductsPage } from '@/pages/dashboards/vendor/products/VendorProductsPage';
+import { VendorQuotesPage } from '@/pages/dashboards/vendor/quotes/VendorQuotesPage';
+import { VendorProfilePage } from '@/pages/dashboards/vendor/profile/VendorProfilePage';
 
 export const router = createBrowserRouter([
   {
@@ -54,11 +67,44 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
-          { path: 'account', element: <AccountDashboardPage /> },
-          { path: 'cart', element: <CartPage /> },
+          {
+            element: <CustomerDashboardLayout />,
+            children: [
+              { path: 'account', element: <AccountDashboardPage /> },
+              { path: 'cart', element: <CartPage /> },
+              { path: 'orders', element: <OrdersListPage /> },
+              { path: 'orders/:id', element: <OrderDetailPage /> },
+            ],
+          },
           { path: 'checkout', element: <CheckoutPage /> },
-          { path: 'orders', element: <OrdersListPage /> },
-          { path: 'orders/:id', element: <OrderDetailPage /> },
+        ],
+      },
+      {
+        element: <WholesaleBuyerProtectedRoute />,
+        children: [
+          {
+            element: <WholesaleBuyerDashboardLayout />,
+            children: [
+              { path: 'wholesale/dashboard', element: <WholesaleBuyerOverviewPage /> },
+              { path: 'wholesale/catalogue', element: <WholesaleCataloguePage /> },
+              { path: 'wholesale/orders', element: <WholesaleOrdersPage /> },
+              { path: 'wholesale/quotes', element: <WholesaleQuotesPage /> },
+            ],
+          },
+        ],
+      },
+      {
+        element: <VendorProtectedRoute />,
+        children: [
+          {
+            element: <VendorDashboardLayout />,
+            children: [
+              { path: 'vendor/dashboard', element: <VendorOverviewPage /> },
+              { path: 'vendor/products', element: <VendorProductsPage /> },
+              { path: 'vendor/quotes', element: <VendorQuotesPage /> },
+              { path: 'vendor/profile', element: <VendorProfilePage /> },
+            ],
+          },
         ],
       },
       { path: '*', element: <NotFoundPage /> },

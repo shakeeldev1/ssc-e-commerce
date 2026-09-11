@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import type { ApiEnvelope } from '@/lib/api-types';
-import type { FeaturedVendor } from '@/features/vendors/vendors.types';
+import { useAuthStore } from '@/features/auth/auth.store';
+import type { Product } from '@/features/catalog/catalog.types';
+import type { FeaturedVendor, VendorProfile } from '@/features/vendors/vendors.types';
 
 export const useFeaturedVendors = (limit = 8) =>
   useQuery({
@@ -40,3 +42,45 @@ export const useApplyVendor = () =>
       return data.data;
     },
   });
+
+const vendorEnabled = (accessToken: string | null, role: string | undefined) =>
+  Boolean(accessToken) && (role === 'vendor' || role === 'wholesale_vendor');
+
+export const useVendorProfile = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const role = useAuthStore((state) => state.user?.role);
+  return useQuery({
+    queryKey: ['vendors', 'me'],
+    queryFn: async () => {
+      const { data } = await apiClient.get<ApiEnvelope<VendorProfile>>('/vendors/me');
+      return data.data;
+    },
+    enabled: vendorEnabled(accessToken, role),
+  });
+};
+
+export const useMyProducts = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const role = useAuthStore((state) => state.user?.role);
+  return useQuery({
+    queryKey: ['catalog', 'products', 'mine'],
+    queryFn: async () => {
+      const { data } = await apiClient.get<ApiEnvelope<Product[]>>('/catalog/products/mine');
+      return data.data;
+    },
+    enabled: vendorEnabled(accessToken, role),
+  });
+};
+
+export const useIncomingQuoteRequests = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const role = useAuthStore((state) => state.user?.role);
+  return useQuery({
+    queryKey: ['wholesale', 'quote-requests', 'incoming'],
+        queryFn: async () => {
+          const { data } = await apiClient.get<ApiEnvelope<Array<{ id: string; requestedQuantity: number; status: string; createdAt: string; productVariant?: { product?: { name: string } } }>>>('/wholesale/quote-requests/incoming');
+      return data.data;
+    },
+    enabled: vendorEnabled(accessToken, role),
+  });
+};
