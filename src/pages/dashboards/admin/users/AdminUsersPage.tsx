@@ -1,17 +1,18 @@
+import { useState, type FormEvent } from 'react';
+import { DashboardPageHeader, DashboardStat } from '@/components/dashboard/DashboardWidgets';
 import { Card } from '@/components/ui/Card';
+import { useAdminUsers } from '@/features/admin/admin.api';
+import { formatDate } from '@/lib/format';
+
+const ROLES = ['student', 'wholesale_buyer', 'vendor', 'wholesale_vendor', 'super_admin'];
+const STATUSES = ['active', 'pending_verification', 'suspended', 'blocked'];
 
 export const AdminUsersPage = () => {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-ink-950">Users</h1>
-        <p className="mt-1 text-sm text-ink-950/60">User management is coming soon.</p>
-      </div>
+  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState({ search: '', role: '', status: '', page: 1 });
+  const { data, isLoading } = useAdminUsers(filters);
+  const totalPages = Math.max(1, Math.ceil((data?.total ?? 0) / 12));
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setFilters((current) => ({ ...current, search: searchInput.trim(), page: 1 })); };
 
-      <Card className="p-6 text-sm text-ink-950/60">
-        A searchable list of students, vendors and institution accounts will appear here once the
-        admin user-management endpoints are built.
-      </Card>
-    </div>
-  );
+  return <div className="space-y-8"><DashboardPageHeader eyebrow="Identity and access" title="Users" description="Search accounts, inspect roles, and monitor platform user status." action={<button type="button" className="rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-800">Export users</button>} /><div className="grid gap-4 sm:grid-cols-3"><DashboardStat label="Matching users" value={data?.total ?? 0} detail="Current filters" icon="◎" tone="blue" /><DashboardStat label="Page" value={`${filters.page} / ${totalPages}`} detail="Paginated results" icon="#" tone="gold" /><DashboardStat label="Verified shown" value={data?.items.filter((user) => user.isEmailVerified).length ?? 0} detail="On this page" icon="✓" tone="green" /></div><Card className="overflow-hidden p-0"><div className="border-b border-slate-200 p-5 sm:p-6"><div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="text-base font-bold text-slate-950">User directory</h2><p className="mt-1 text-xs text-slate-400">{data?.total ?? 0} matching accounts</p></div><form onSubmit={submitSearch} className="flex gap-2"><input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="Search name, email, phone..." className="w-56 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs outline-none focus:border-brand-400 focus:bg-white" /><button type="submit" className="rounded-xl bg-slate-950 px-4 py-2.5 text-xs font-semibold text-white">Search</button></form></div><div className="mt-4 flex flex-wrap gap-3"><select value={filters.role} onChange={(event) => setFilters((current) => ({ ...current, role: event.target.value, page: 1 }))} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600"><option value="">All roles</option>{ROLES.map((role) => <option key={role} value={role}>{role.replaceAll('_', ' ')}</option>)}</select><select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value, page: 1 }))} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600"><option value="">All statuses</option>{STATUSES.map((status) => <option key={status} value={status}>{status.replaceAll('_', ' ')}</option>)}</select></div></div><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left"><thead className="bg-slate-50 text-[10px] uppercase tracking-[0.15em] text-slate-400"><tr><th className="px-6 py-3 font-semibold">User</th><th className="px-6 py-3 font-semibold">Role</th><th className="px-6 py-3 font-semibold">Status</th><th className="px-6 py-3 font-semibold">Verification</th><th className="px-6 py-3 font-semibold">Joined</th></tr></thead><tbody className="divide-y divide-slate-100">{isLoading ? <tr><td colSpan={5} className="px-6 py-14 text-center text-sm text-slate-400">Loading users...</td></tr> : (data?.items ?? []).map((user) => <tr key={user.id} className="hover:bg-slate-50"><td className="px-6 py-4"><p className="text-sm font-semibold text-slate-950">{user.fullName}</p><p className="mt-1 text-xs text-slate-400">{user.email}</p></td><td className="px-6 py-4 text-xs font-semibold capitalize text-slate-600">{user.role.replaceAll('_', ' ')}</td><td className="px-6 py-4"><span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${user.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{user.status.replaceAll('_', ' ')}</span></td><td className="px-6 py-4 text-xs text-slate-500">{user.isEmailVerified ? 'Verified' : 'Unverified'}</td><td className="px-6 py-4 text-xs text-slate-500">{formatDate(user.createdAt)}</td></tr>)}{!isLoading && data?.items.length === 0 && <tr><td colSpan={5} className="px-6 py-14 text-center text-sm text-slate-400">No users match these filters.</td></tr>}</tbody></table></div><div className="flex items-center justify-between border-t border-slate-200 px-5 py-4 sm:px-6"><p className="text-xs text-slate-400">Page {filters.page} of {totalPages}</p><div className="flex gap-2"><button type="button" disabled={filters.page === 1} onClick={() => setFilters((current) => ({ ...current, page: current.page - 1 }))} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 disabled:opacity-40">Previous</button><button type="button" disabled={filters.page >= totalPages} onClick={() => setFilters((current) => ({ ...current, page: current.page + 1 }))} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 disabled:opacity-40">Next</button></div></div></Card></div>;
 };

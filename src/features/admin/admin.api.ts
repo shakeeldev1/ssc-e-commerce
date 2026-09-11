@@ -32,6 +32,33 @@ export interface NetRevenueReport {
   netRevenue: number;
 }
 
+export interface AdminUser {
+  id: string;
+  email: string;
+  phone: string | null;
+  fullName: string;
+  role: string;
+  status: string;
+  isEmailVerified: boolean;
+  createdAt: string;
+}
+
+export interface AdminUserFilters {
+  search?: string;
+  role?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const useAdminUsers = (filters: AdminUserFilters = {}) => useQuery({
+  queryKey: ['admin', 'users', filters],
+  queryFn: async () => {
+    const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<AdminUser>>>('/users', { params: { page: filters.page ?? 1, limit: filters.limit ?? 12, ...filters } });
+    return data.data;
+  },
+});
+
 export interface AdminOrderFilters {
   status?: OrderStatus;
   search?: string;

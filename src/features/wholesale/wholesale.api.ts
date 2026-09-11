@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import type { ApiEnvelope, PaginatedResult } from '@/lib/api-types';
 import { useAuthStore } from '@/features/auth/auth.store';
@@ -43,5 +43,37 @@ export const useMyQuoteRequests = () => {
       return data.data;
     },
     enabled: buyerEnabled(accessToken, role),
+  });
+};
+
+export interface WholesaleVariant {
+  id: string;
+  productId: string;
+  sku: string;
+  attributes: Record<string, string>;
+  price: number;
+  compareAtPrice: number | null;
+  isActive: boolean;
+  isWholesaleEligible: boolean;
+  wholesaleMoq: number | null;
+  product?: { name: string; images?: Array<{ url: string; isPrimary: boolean }> };
+}
+
+export const useWholesaleCatalogue = (search: string, page: number) => useQuery({
+  queryKey: ['wholesale', 'catalogue', search, page],
+  queryFn: async () => {
+    const { data } = await apiClient.get<ApiEnvelope<PaginatedResult<WholesaleVariant>>>('/wholesale/variants', { params: { search: search || undefined, page, limit: 12 } });
+    return data.data;
+  },
+});
+
+export const useAddWholesaleCartItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { productVariantId: string; quantity: number }) => {
+      const { data } = await apiClient.post<ApiEnvelope<WholesaleCartSummary>>('/wholesale/cart/items', input);
+      return data.data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['wholesale', 'cart'] }),
   });
 };
